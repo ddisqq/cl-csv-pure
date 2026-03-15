@@ -6,13 +6,16 @@
 
 (asdf:defsystem #:cl-csv-pure
   :description "RFC 4180 compliant CSV parsing for Common Lisp"
-  :author "Parkian Company LLC"
+  :author "Park Ian Co"
   :license "Apache-2.0"
   :version "0.1.0"
   :serial t
   :components ((:file "package")
                (:module "src"
-                :components ((:file "csv")))))
+                :components ((:file "package")
+                             (:file "conditions" :depends-on ("package"))
+                             (:file "types" :depends-on ("package"))
+                             (:file "cl-csv-pure" :depends-on ("package" "conditions" "types")))))))
 
 (asdf:defsystem #:cl-csv-pure/test
   :description "Tests for cl-csv-pure"
