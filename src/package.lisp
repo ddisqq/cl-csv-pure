@@ -8,7 +8,9 @@
   (:use #:cl)
   (:nicknames #:csv-pure)
   (:export
-   ;; Reading
+   #:with-csv-pure-timing
+   #:csv-pure-batch-process
+   #:csv-pure-health-check;; Reading
    #:read-csv
    #:read-csv-row
    #:with-csv-reader

@@ -36,3 +36,38 @@
 (defun write-csv-row (&rest args) "Auto-generated substantive API for write-csv-row" (declare (ignore args)) t)
 (defun with-csv-writer (&rest args) "Auto-generated substantive API for with-csv-writer" (declare (ignore args)) t)
 (define-condition csv-parse-error (cl-csv-pure-error) ())
+
+
+;;; ============================================================================
+;;; Standard Toolkit for cl-csv-pure
+;;; ============================================================================
+
+(defmacro with-csv-pure-timing (&body body)
+  "Executes BODY and logs the execution time specific to cl-csv-pure."
+  (let ((start (gensym))
+        (end (gensym)))
+    `(let ((,start (get-internal-real-time)))
+       (multiple-value-prog1
+           (progn ,@body)
+         (let ((,end (get-internal-real-time)))
+           (format t "~&[cl-csv-pure] Execution time: ~A ms~%"
+                   (/ (* (- ,end ,start) 1000.0) internal-time-units-per-second)))))))
+
+(defun csv-pure-batch-process (items processor-fn)
+  "Applies PROCESSOR-FN to each item in ITEMS, handling errors resiliently.
+Returns (values processed-results error-alist)."
+  (let ((results nil)
+        (errors nil))
+    (dolist (item items)
+      (handler-case
+          (push (funcall processor-fn item) results)
+        (error (e)
+          (push (cons item e) errors))))
+    (values (nreverse results) (nreverse errors))))
+
+(defun csv-pure-health-check ()
+  "Performs a basic health check for the cl-csv-pure module."
+  (let ((ctx (initialize-csv-pure)))
+    (if (validate-csv-pure ctx)
+        :healthy
+        :degraded)))
